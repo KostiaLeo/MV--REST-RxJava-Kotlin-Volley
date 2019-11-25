@@ -1,14 +1,15 @@
 package com.example.restkotlinized.presenter
 
+import android.content.Context
 import com.example.restkotlinized.MVPContract
 import com.example.restkotlinized.model.ArtistsModel
 import com.example.restkotlinized.model.pojo.Results
 
-class Presenter(private val artistsView: MVPContract.View) : MVPContract.Presenter,
+class Presenter(private val artistsView: MVPContract.View, context: Context) : MVPContract.Presenter,
     MVPContract.Model.OnFinishedListener {
 
     private var artistsModel: ArtistsModel =
-        ArtistsModel()
+        ArtistsModel(context)
 
     override fun requestDataFromServer() {
         artistsModel.getArtistsList(this)

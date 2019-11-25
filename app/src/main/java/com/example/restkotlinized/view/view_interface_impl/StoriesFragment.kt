@@ -39,7 +39,7 @@ class StoriesFragment(context: Context) : Fragment(), MVPContract.View {
     private var viewPager2: ViewPager2? = null
     private var sliderDotsPanel: LinearLayout? = null
 
-    private var presenter: Presenter = Presenter(this)
+    private var presenter: Presenter = Presenter(this, context)
 
     private var mainAdapter: NewzAdapter? = null
     private var adapterForTopNewz: TopNewzAdapter? = null
