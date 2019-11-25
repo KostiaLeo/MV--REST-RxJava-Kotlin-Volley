@@ -29,7 +29,7 @@ class ArtistsModel(val context: Context) : MVPContract.Model {
                 onFinishedListener?.onFinished(myNewz.results.toList())
             },
             Response.ErrorListener {
-                println(it)
+                onFinishedListener?.onFailed(it)
             }
         ).apply {
             tag = TAG
