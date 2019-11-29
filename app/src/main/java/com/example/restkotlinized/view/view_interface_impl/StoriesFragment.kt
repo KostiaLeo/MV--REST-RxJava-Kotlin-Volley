@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -55,7 +56,16 @@ class StoriesFragment(context: Context) : Fragment(), MVPContract.View {
         mainAdapter?.notifyDataSetChanged()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val root = inflater.inflate(R.layout.fragment_stories, container, false)
         this.root = root
         presenter.requestDataFromServer()
@@ -68,36 +78,41 @@ class StoriesFragment(context: Context) : Fragment(), MVPContract.View {
     @SuppressLint("CheckResult")
     fun refreshUIByObserving() {
         disposableLoader = loadObservable.subscribe { results ->
-            putResultsToInitUI(results)
+            setAdaptersAndDots(ArrayList(results))
         }
     }
 
-    private fun putResultsToInitUI(r: List<Results>) {
-        setAdaptersAndDots(ArrayList(r))
-    }
-
-// ----------------------------- UI ---------------------------------
+    // ----------------------------- UI ---------------------------------
 
     private fun findUIElements() {
-        newsRecycler = root?.findViewById<RecyclerView>(R.id.newzzz)
-        newsRecycler?.layoutManager = LinearLayoutManager(ctx)
-        newsRecycler?.itemAnimator = DefaultItemAnimator()
+        newsRecycler = root?.findViewById<RecyclerView>(R.id.newzzz)?.apply {
+            layoutManager = LinearLayoutManager(ctx)
+            itemAnimator = DefaultItemAnimator()
+        }
 
         viewPager2 = root?.findViewById<ViewPager2>(R.id.viewPager2)
-        viewPager2?.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+            ?.apply { orientation = ViewPager2.ORIENTATION_HORIZONTAL }
     }
 
     private fun setAdaptersAndDots(allResults: ArrayList<Results>) {
-        mainAdapter = NewzAdapter(allResults)
+        mainAdapter = NewzAdapter(allResults, ctx)
         adapterForTopNewz = TopNewzAdapter(allResults)
 
         newsRecycler?.adapter = mainAdapter
         viewPager2?.adapter = adapterForTopNewz
 
+        mainAdapter!!.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                newsRecycler?.smoothScrollToPosition(itemCount)
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                newsRecycler?.scrollToPosition(0)
+            }
+        })
+
         sliderDotsPanel = root?.findViewById<LinearLayout>(R.id.SliderDots)
-        sliderDotsPanel?.let {
-            viewPager2?.let { pager -> setDots(sliderDotsPanel!!, pager) }
-        }
+        viewPager2?.let { pager -> setDots(sliderDotsPanel!!, pager) }
     }
 
     private fun setDots(sliderDotsPanel: LinearLayout, viewPager: ViewPager2) {

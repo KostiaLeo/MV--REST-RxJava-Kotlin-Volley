@@ -14,26 +14,34 @@ import com.example.restkotlinized.model.pojo.Results
 import com.example.restkotlinized.view.mainAdapter.NewzAdapter
 import io.reactivex.disposables.Disposable
 
-class VideoFragment(context: Context) : Fragment() {
+class ChosenFragment(context: Context) : Fragment() {
     private var root: View? = null
     private var disposable: Disposable? = null
 
     companion object Factory {
-        fun create(context: Context): VideoFragment =
-            VideoFragment(context)
+        fun create(context: Context): ChosenFragment =
+            ChosenFragment(context)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val root = inflater.inflate(R.layout.fragment_video, container, false)
+
         this.root = root
         observeDataFromClickObservable()
         return root
     }
 
     private fun observeDataFromClickObservable() {
-        disposable = NewzAdapter.clickObservable.subscribe { result ->
-            setView(result)
-        }
+        disposable = NewzAdapter.clickObservable.subscribe({
+            setView(it)
+        }, {
+            println("Error -> $it")
+        })
+        //result -> setView(result)
     }
 
     private fun setView(result: Results?) {

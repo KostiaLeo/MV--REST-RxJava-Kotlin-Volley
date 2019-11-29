@@ -5,9 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".view.view_interface_impl.StoriesFragment">
-<androidx.core.widget.NestedScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+
+<!--<androidx.core.widget.NestedScrollView-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent">-->
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -86,5 +87,5 @@
             tools:listitem="@layout/list_item" />
 
     </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+<!--</androidx.core.widget.NestedScrollView>-->
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

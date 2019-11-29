@@ -1,10 +1,12 @@
 package com.example.restkotlinized.view.mainAdapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.restkotlinized.R
@@ -17,7 +19,7 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import kotlin.collections.ArrayList
 
-class NewzAdapter(val results: ArrayList<Results>) : RecyclerView.Adapter<NewzAdapter.ViewHolder>() {
+class NewzAdapter(val results: ArrayList<Results>, val context: Context) : RecyclerView.Adapter<NewzAdapter.ViewHolder>() {
 
     companion object {
         private val clickSubject = BehaviorSubject.create<Results>()
@@ -39,12 +41,22 @@ class NewzAdapter(val results: ArrayList<Results>) : RecyclerView.Adapter<NewzAd
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val result = results[position]
         val image = result.image
-        Glide.with(holder.itemView.context)
-            .load(image.url)
-            .into(holder.photo)
-        holder.nameTv.text = result.name
-        holder.idTv.text = result.currency.id
-        holder.sourceTv.text = result.price
+
+        holder.apply {
+            Glide.with(this.itemView.context)
+                .load(image.url)
+                .into(holder.photo)
+
+            nameTv.text = result.name
+            idTv.text = result.currency.id
+            sourceTv.text = result.price
+        }
+//        Glide.with(holder.itemView.context)
+//            .load(image.url)
+//            .into(holder.photo)
+//        holder.nameTv.text = result.name
+//        holder.idTv.text = result.currency.id
+//        holder.sourceTv.text = result.price
     }
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -56,13 +68,24 @@ class NewzAdapter(val results: ArrayList<Results>) : RecyclerView.Adapter<NewzAd
         init {
             disposableSetItem = RxView.clicks(itemView).subscribe {
                 clickSubject.onNext(results[layoutPosition])
+                println("onClick on the $layoutPosition to the element ${results[layoutPosition].name}")
                 switchSubject.onNext(Any())
+                //LinearLayoutManager(context).scrollToPositionWithOffset(3, 20)
+
             }
         }
     }
-
-    override fun onViewDetachedFromWindow(holder: ViewHolder) {
-        super.onViewDetachedFromWindow(holder)
-        disposableSetItem?.dispose()
+//
+//    override fun onViewDetachedFromWindow(holder: ViewHolder) {
+//        super.onViewDetachedFromWindow(holder)
+//        disposableSetItem?.dispose()
+    //final int position = viewHolder.getAdapterPosition();
+    //int firstVisiblePosition = viewHolder.layoutManager.findFirstVisibleItemPosition();
+    //positionList.put(position, firstVisiblePosition);
+//    }
+    override fun onViewRecycled(holder: ViewHolder) {
+        //val position = lManager.
+        val firstVisiblePosition = holder
+        super.onViewRecycled(holder)
     }
 }
